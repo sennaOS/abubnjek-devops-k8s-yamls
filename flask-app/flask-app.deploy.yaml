@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  namespace: flask-devops
+  labels:
+    app: flask-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask
+        env:
+         - name: DB_NAME
+           valueFrom:
+             secretKeyRef:
+               name: flask-db-secret
+               key: db_name
+         - name: DB_USER
+           valueFrom:
+             secretKeyRef:
+               name: flask-db-secret
+               key: db_user
+         - name: DB_PASS
+           valueFrom:
+             secretKeyRef:
+               name: flask-db-secret
+               key: db_password
+         - name: DB_HOST
+           valueFrom:
+             secretKeyRef:
+               name: flask-db-secret
+               key: db_host
+        image: abubnjek/flask-app:v1.0
+        ports:
+        - containerPort: 5000

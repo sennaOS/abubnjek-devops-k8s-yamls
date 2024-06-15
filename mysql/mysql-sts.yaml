@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+ namespace: flask-devops
+ name: flask-db
+spec:
+ selector:
+   matchLabels:
+     app: flask-db
+ serviceName: flask-db
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       app: flask-db
+   spec:
+     terminationGracePeriodSeconds: 10
+     containers:
+     - name: mysql
+       image: abubnjek/flask-db:v1.0
+       ports:
+       - containerPort: 3306
+         name: mysql-port
+       env:
+       - name: MYSQL_ROOT_PASSWORD
+         valueFrom:
+           secretKeyRef:
+             name: flask-db-secret
+             key: root_password
+       - name: MYSQL_DATABASE
+         valueFrom:
+           secretKeyRef:
+             name: flask-db-secret
+             key: db_name
+       - name: MYSQL_USER
+         valueFrom:
+           secretKeyRef:
+             name: flask-db-secret
+             key: db_user
+       - name: MYSQL_PASSWORD
+         valueFrom:
+           secretKeyRef:
+             name: flask-db-secret
+             key: db_password
+       - name: MYSQL_HOST
+         valueFrom:
+           secretKeyRef:
+             name: flask-db-secret
+             key: db_host
+       volumeMounts:
+       - mountPath: /var/lib/mysql
+         name: mysql-vol
+     volumes:
+     - name: mysql-vol
+       persistentVolumeClaim:
+         claimName: flask-db-pvc

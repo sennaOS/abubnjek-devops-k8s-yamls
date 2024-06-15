@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+    app: flask-app
+  name: flask-app
+  namespace: flask-devops
+spec:
+  ports:
+  - nodePort: 31449
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+  type: NodePort
